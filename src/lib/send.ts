@@ -47,6 +47,9 @@ export const parseArguments = (): Arguments => {
   };
 };
 
+export const listMails = (input: string): string[] =>
+  fs.readdirSync(input).filter((file) => fs.statSync(`${input}/${file}`).isFile());
+
 export const createMailer = (host: string, user: string, pass: string): Mailer => {
   const transport = nodemailer.createTransport({ host, auth: { user, pass } });
   return {
