@@ -56,7 +56,12 @@ export const parseArguments = (argv: string[]): Arguments => {
 };
 
 export const createMailer = async ({ host, port, user, password: pass }: MailerConfig): Promise<Mailer> => {
-  const transport = nodemailer.createTransport({ host, port, auth: { user, pass } });
+  const transport = nodemailer.createTransport({
+    host,
+    port,
+    auth: { user, pass },
+    tls: { rejectUnauthorized: false },
+  });
   try {
     await transport.verify();
   } catch (error) {
