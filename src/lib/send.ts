@@ -38,7 +38,7 @@ export const parseArguments = (argv: string[]): Arguments => {
 
   if (!args.input || !args.host) {
     console.log(`\
-      send: send emails form input via SMTP
+      send: send mails form input via SMTP
 
       Usage
         $ send --input generated-emails --smtp smtp.email.server --user test --password password --pause pause-in-millis

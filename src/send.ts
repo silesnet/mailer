@@ -7,7 +7,7 @@ const args = parseArguments(process.argv.slice(2));
 console.log(`\
 Send mail
   input                  ${args.input}
-  host                   ${args.host}
+  SMTP host              ${args.host}
   port                   ${args.port}
   user                   ${args.user}
   password               ***
