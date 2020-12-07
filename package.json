@@ -5,7 +5,7 @@
   "main": "app.js",
   "scripts": {
     "test-generate": "nodemon dist/generate.js --template test/template.hbs --data test/data.csv --output test/generated-mail --clear-output",
-    "test-send": "nodemon dist/send.js --input test/generated-mail --smtp smtp.email.server --user test --password password --pause 100"
+    "test-send": "nodemon dist/send.js --input test/generated-mail --host smtp.ethereal.email --port 587 --user cristopher.jacobson@ethereal.email --password kVcBf3kJv8TuU5aHC1 --pause 100"
   },
   "author": "",
   "license": "ISC",

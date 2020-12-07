@@ -1,13 +1,13 @@
 import parseArgs from 'minimist';
 import { simpleParser } from 'mailparser';
-import { errorExit } from './shared';
 import fs from 'fs';
-import path from 'path';
 import nodemailer from 'nodemailer';
+import { errorExit } from './shared';
 
 export interface Arguments {
   input: string;
-  smtp: string;
+  host: string;
+  port: number;
   user: string;
   password: string;
   pause: number;
@@ -19,17 +19,24 @@ export interface RawMail {
   raw: any;
 }
 
+export interface MailerConfig {
+  host: string;
+  port: number;
+  user: string;
+  password: string;
+}
+
 export interface Mailer {
   send(mail: RawMail): Promise<any>;
 }
 
-export const parseArguments = (): Arguments => {
-  const args = parseArgs(process.argv.slice(2), {
-    alias: { input: 'i', smtp: 's', user: 'u', password: 'p' },
-    default: { input: 'generated-emails', pause: 0 },
+export const parseArguments = (argv: string[]): Arguments => {
+  const args = parseArgs(argv, {
+    alias: { input: 'i', host: 'h', port: 't', user: 'u', password: 'p', pause: 's' },
+    default: { port: 25, input: 'generated-emails', pause: 0 },
   });
 
-  if (!args.input || !args.smtp) {
+  if (!args.input || !args.host) {
     console.log(`\
       send: send emails form input via SMTP
 
@@ -40,18 +47,21 @@ export const parseArguments = (): Arguments => {
   }
   return {
     input: args.input,
-    smtp: args.smtp,
+    host: args.host,
+    port: args.port,
     user: args.user,
     password: args.password,
     pause: args.pause,
   };
 };
 
-export const listMails = (input: string): string[] =>
-  fs.readdirSync(input).filter((file) => fs.statSync(`${input}/${file}`).isFile());
-
-export const createMailer = (host: string, user: string, pass: string): Mailer => {
-  const transport = nodemailer.createTransport({ host, auth: { user, pass } });
+export const createMailer = async ({ host, port, user, password: pass }: MailerConfig): Promise<Mailer> => {
+  const transport = nodemailer.createTransport({ host, port, auth: { user, pass } });
+  try {
+    await transport.verify();
+  } catch (error) {
+    errorExit(`failed creating mailer: '${error.message}`);
+  }
   return {
     send: (mail) =>
       transport.sendMail({
@@ -65,25 +75,4 @@ export const parseMail = async (path: string): Promise<RawMail> => {
   const raw = fs.readFileSync(path, 'utf-8');
   const mail = await simpleParser(raw);
   return { from: mail.from!.text, to: mail.to!.text, raw: raw };
-};
-
-const createFolderIfNotExist = (folder: string): void => {
-  if (fs.existsSync(folder)) {
-    return;
-  }
-  try {
-    fs.mkdirSync(folder, { recursive: true });
-  } catch (error) {
-    errorExit(`failed to create folder '${folder}': '${error.message}'`);
-  }
-};
-
-export const move = (source: string, target: string, message: string): void => {
-  try {
-    createFolderIfNotExist(path.dirname(target));
-    fs.renameSync(source, target);
-    console.log(message);
-  } catch (error) {
-    errorExit(`failed to move '${source}' to '${target}': '${error.message}'`);
-  }
 };

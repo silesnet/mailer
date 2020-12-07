@@ -8,25 +8,26 @@ import {
 } from './lib/generate';
 import { performance } from 'perf_hooks';
 
-const args = parseArguments();
+const args = parseArguments(process.argv.slice(2));
 
 console.log(`\
-Generating mails...
+Generate mail...
   Handlebars template    ${args.template}
   CSV data               ${args.data}
   output folder          ${args.output}
   clear output           ${args.clearOutput}\n`);
 
+console.log('configuring...');
 const template = createTemplate(args.template);
-console.log('...template compiled.');
+console.log('... template compiled.');
 
 const customers = createCsvDataStream(args.data);
-console.log('...data stream opened.');
+console.log('... data stream opened.');
 
 const output = createEmptyFolder(args.output, { clear: args.clearOutput });
-console.log('...output folder created.');
+console.log('... output folder created.');
 
-console.log('generating mails...');
+console.log('generating...');
 let emailsCount = 0;
 const start = performance.now();
 customers
@@ -34,11 +35,11 @@ customers
     const file = customer.id + '_' + normalizeText(customer.name) + '.eml';
     const email = template(customer);
     saveFile(`${output}/${file}`, email);
-    console.log(`..mail generated to '${file}'.`);
+    console.log(`... mail generated to '${file}'.`);
     emailsCount++;
   })
   .on('end', () =>
     console.log(
-      `\nFinished generating ${emailsCount} mails in ${Math.round(performance.now() - start) / 1000} seconds.`
+      `\nFinished generating of ${emailsCount} mails in ${Math.round(performance.now() - start) / 1000} seconds.`
     )
   );

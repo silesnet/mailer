@@ -1,14 +1,16 @@
-import { Arguments, createMailer, listMails, move, parseArguments, parseMail, RawMail } from './lib/send';
+import { Arguments, createMailer, parseArguments, parseMail, RawMail } from './lib/send';
+import { Queue } from './lib/shared';
 import { performance } from 'perf_hooks';
 
-const args = parseArguments();
+const args = parseArguments(process.argv.slice(2));
 
 console.log(`\
-Sending mails...
+Send mail
   input                  ${args.input}
-  SMTP server            ${args.smtp}
+  host                   ${args.host}
+  port                   ${args.port}
   user                   ${args.user}
-  password               ${args.password}
+  password               ***
   pause                  ${args.pause} ms\n`);
 
 interface Counter {
@@ -16,51 +18,48 @@ interface Counter {
   failed: number;
 }
 
-const send = async ({ input, smtp, user, password, pause }: Arguments): Promise<Counter> => {
-  const mails = listMails(input);
-  console.log(`...${mails.length} mails found.`);
+const send = async ({ input, host, port, user, password, pause }: Arguments): Promise<Counter> => {
+  console.log('configuring...');
 
-  const counter: Counter = { sent: 0, failed: 0 };
-  if (mails.length === 0) {
-    return counter;
+  const queue = new Queue(input, { processed: 'sent', failed: 'failed' });
+  console.log(`... ${queue.status.size} mails found.`);
+
+  if (queue.empty) {
+    return { sent: 0, failed: 0 };
   }
 
-  const mailer = createMailer(smtp, user, password);
-  console.log(`...mailer configured.`);
+  const mailer = await createMailer({ host, port, user, password });
+  console.log(`... mailer configured.`);
 
-  console.log('sending mails...');
-  for (const file of mails) {
-    const path = `${input}/${file}`;
+  console.log('sending...');
+  for (const item of queue) {
     let mail: RawMail | undefined = undefined;
 
     // parse
     try {
-      mail = await parseMail(path);
+      mail = await parseMail(item.path);
     } catch (error) {
-      move(path, `${input}/failed/${file}`, `...failed to parse mail '${file}': '${error.message}'.`);
-      counter.failed++;
+      item.failed(() => console.log(`... failed parsing mail '${item.file}': '${error.message}'.`));
       continue;
     }
 
     // send and pause
     try {
       await mailer.send(mail);
-      move(path, `${input}/sent/${file}`, `...mail '${file}' send.`);
-      counter.sent++;
+      item.succeded(() => console.log(`... mail '${item.file}' send.`));
     } catch (error) {
-      move(path, `${input}/failed/${file}`, `...failed sending mail '${file}': '${error.message}'.`);
-      counter.failed++;
+      item.failed(() => console.log(`... failed sending mail '${item.file}': '${error.message}'.`));
     } finally {
       await new Promise((resolve) => setTimeout(resolve, pause));
     }
   }
 
-  return counter;
+  return { sent: queue.status.processed, failed: queue.status.failed };
 };
 
 // main
 const start = performance.now();
 send(args).then(({ sent, failed }) => {
-  console.log(`\nDelivered ${sent} of ${sent + failed} emails (failed: ${failed}).`);
-  console.log(`Finished email delivery in ${Math.round(performance.now() - start) / 1000} seconds.`);
+  console.log(`\nSent ${sent} of ${sent + failed} mails (${failed} failed).`);
+  console.log(`Finished mail sending in ${Math.round(performance.now() - start) / 1000} seconds.`);
 });

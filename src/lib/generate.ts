@@ -12,8 +12,8 @@ export interface Arguments {
   clearOutput: boolean;
 }
 
-export const parseArguments = (): Arguments => {
-  const args = parseArgs(process.argv.slice(2), {
+export const parseArguments = (argv: string[]): Arguments => {
+  const args = parseArgs(argv, {
     alias: { template: 't', data: 'd', output: 'o', 'clear-output': 'c' },
     default: { output: 'generated-emails', 'clear-output': false },
   });
