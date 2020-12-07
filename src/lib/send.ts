@@ -41,7 +41,7 @@ export const parseArguments = (argv: string[]): Arguments => {
       send: send mails form input via SMTP
 
       Usage
-        $ send --input generated-emails --smtp smtp.email.server --user test --password password --pause pause-in-millis
+        $ send --input generated-emails --host smtp.email.server --user test --password password --pause pause-in-millis
     `);
     process.exit(1);
   }
