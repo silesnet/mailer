@@ -1,17 +1,17 @@
 import {
   parseArguments,
-  createTemplate,
   createEmptyFolder,
+  createTemplate,
   createCsvDataStream,
   normalizeText,
   saveFile,
-} from './lib';
+} from './lib/generate';
 import { performance } from 'perf_hooks';
 
 const args = parseArguments();
 
 console.log(`\
-Generating emails...
+Generating mails...
   Handlebars template    ${args.template}
   CSV data               ${args.data}
   output folder          ${args.output}
@@ -26,34 +26,19 @@ console.log('...data stream opened.');
 const output = createEmptyFolder(args.output, { clear: args.clearOutput });
 console.log('...output folder created.');
 
-console.log('generating emails...');
+console.log('generating mails...');
 let emailsCount = 0;
 const start = performance.now();
 customers
-  .on(
-    'data',
-    (customer: {
-      customerName: string;
-      customerEmail: string;
-      agreementNumber: string;
-    }) => {
-      const file =
-        normalizeText(customer.customerName) +
-        '_' +
-        normalizeText(customer.agreementNumber) +
-        '.eml';
-      const path = `${output}/${file}`;
-      const email = template(customer);
-      saveFile(path, email);
-      console.log(
-        `...email generated for '${customer.customerName}' to '${path}'.`
-      );
-    }
-  )
+  .on('data', (customer: { id: string; name: string; email: string; agreement: string }) => {
+    const file = customer.id + '_' + normalizeText(customer.name) + '.eml';
+    const email = template(customer);
+    saveFile(`${output}/${file}`, email);
+    console.log(`..mail generated to '${file}'.`);
+    emailsCount++;
+  })
   .on('end', () =>
     console.log(
-      `\nFinished generating ${emailsCount} emails in ${
-        Math.round(((performance.now() - start) / 1000) * 100) / 100
-      } seconds.`
+      `\nFinished generating ${emailsCount} mails in ${Math.round(performance.now() - start) / 1000} seconds.`
     )
   );

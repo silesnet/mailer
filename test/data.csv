@@ -1,4 +1,4 @@
-customerName|customerEmail|agreementNumber
-Josef Novák|sikora@silesnet.cz|123456
-Karel Sikora|sikora@silesnet.cz|223456
-Adam Bocek|sikora@silesnet.cz|323456
+id|name|email|agreement
+1111|Josef Novák|sikora@silesnet.cz|123456
+2111|Karel Sikora|sikora@silesnet.cz|223456
+3111|Adam Bocek|sikora@silesnet.cz|323456
