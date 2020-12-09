@@ -15,18 +15,9 @@ export interface Arguments {
 export const parseArguments = (argv: string[]): Arguments => {
   const args = parseArgs(argv, {
     alias: { template: 't', data: 'd', output: 'o', 'clear-output': 'c' },
-    default: { output: 'generated-emails', 'clear-output': false },
+    default: { output: 'mail', 'clear-output': false },
   });
 
-  if (!args.template || !args.data) {
-    console.log(`\
-      generate: generate email content files based on CSV data and Handlebars email template
-
-      Usage
-        $ generate --data data.csv --template template.hbs --output generated-emails --clear-output
-    `);
-    process.exit(1);
-  }
   return {
     template: args.template,
     data: args.data,

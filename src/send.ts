@@ -4,13 +4,23 @@ import { performance } from 'perf_hooks';
 
 const args = parseArguments(process.argv.slice(2));
 
+if (!args.input || !args.host || !Number.isFinite(args.pause)) {
+  console.log(`\
+    mail-send: send mails form raw mail files via SMTP
+
+    Usage:
+      node mail-send.js --input|-i <FOLDER> --pause|-s <PAUSE-IN-MILLIS> [--host|-h <SMTP>] [--port|-t <PORT>] [--user|-u <USER>] [--password|-p <PASSWORD>]
+  `);
+  process.exit(1);
+}
+
 console.log(`\
 Send mail
   input                  ${args.input}
   SMTP host              ${args.host}
   port                   ${args.port}
   user                   ${args.user}
-  password               ***
+  password               ${args.password ? '***' : undefined}
   pause                  ${args.pause} ms\n`);
 
 interface Counter {

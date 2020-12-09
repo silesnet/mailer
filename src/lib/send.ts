@@ -33,18 +33,9 @@ export interface Mailer {
 export const parseArguments = (argv: string[]): Arguments => {
   const args = parseArgs(argv, {
     alias: { input: 'i', host: 'h', port: 't', user: 'u', password: 'p', pause: 's' },
-    default: { port: 25, input: 'generated-emails', pause: 0 },
+    default: { port: 25, host: 'localhost' },
   });
 
-  if (!args.input || !args.host) {
-    console.log(`\
-      send: send mails form input via SMTP
-
-      Usage
-        $ send --input generated-emails --host smtp.email.server --user test --password password --pause pause-in-millis
-    `);
-    process.exit(1);
-  }
   return {
     input: args.input,
     host: args.host,

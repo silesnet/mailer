@@ -10,6 +10,16 @@ import { performance } from 'perf_hooks';
 
 const args = parseArguments(process.argv.slice(2));
 
+if (!args.template || !args.data) {
+  console.log(`\
+    mail-gen: generate email content files based on CSV data and Handlebars email template
+
+    Usage
+      $ mail-gen --data|-d <CSV-FILE> --template|-t <HANDLEBARS-TEMPLATE-FILE> [--output|-o <MAIL-FOLDER> [--clear-output|-c]
+  `);
+  process.exit(1);
+}
+
 console.log(`\
 Generate mail...
   Handlebars template    ${args.template}

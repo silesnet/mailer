@@ -46,6 +46,9 @@ export class Queue {
   private items: Item[];
 
   constructor(input: string, { processed = 'processed', failed = 'failed' } = {}) {
+    if (!fs.existsSync(input) || !fs.statSync(input).isDirectory()) {
+      errorExit(`folder does not exist '${input}'`);
+    }
     this.items = fs
       .readdirSync(input)
       .filter((file) => fs.statSync(`${input}/${file}`).isFile())
