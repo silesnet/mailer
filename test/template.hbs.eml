@@ -1,0 +1,37 @@
+Return-Path: <return@no-mail.cz>
+Reply-To: return@no-mail.cz
+To: "{{mimeEncode name}}" <{{email}}>
+From: "{{mimeEncode "Sender with utf-8 chars Ěš"}}" <sender@no-mail.cz>
+Subject: {{mimeEncode "Subject line with utf-8 chars ěščřČŇ"}}
+MIME-Version: 1.0
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: 8bit
+
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html" ; charset="utf-8" />
+  <style>
+    body {
+      font-family: Arial, Arial, Helvetica, sans-serif;
+      line-height: 130%;
+    }
+
+    .gray {
+      color: #555;
+    }
+  </style>
+</head>
+
+<body>
+<p>Hello {{name}},</p>
+<p>
+  plese send us money according to our agreemnt {{agreement}} number.
+</p>
+<p>
+  Thank you.
+</p>
+<div class="gray">
+  <p>Our company</p>
+</div>
+</body>
+</html>

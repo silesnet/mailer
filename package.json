@@ -1,17 +1,17 @@
 {
   "name": "mailer",
   "version": "1.0.0",
-  "description": "",
+  "description": "Generate and send mail generated from CSV data file and Handlebars mail template.",
   "main": "app.js",
   "scripts": {
     "clean": "rimraf build",
     "build": "tsc",
     "dist": "webpack",
     "dev": "tsc --watch",
-    "test-generate": "nodemon build/generate.js --template test/template.hbs --data test/data.csv --output build/test/generated-mail --clear-output",
+    "test-gen": "nodemon build/generate.js --template test/template.hbs.eml --data test/data.csv --output build/test/generated-mail --clear-output",
     "test-send": "nodemon build/send.js --input build/test/generated-mail --host smtp.ethereal.email --port 587 --user cristopher.jacobson@ethereal.email --password kVcBf3kJv8TuU5aHC1 --pause 100"
   },
-  "author": "",
+  "author": "silesnet",
   "license": "ISC",
   "devDependencies": {
     "@types/handlebars": "^4.1.0",
