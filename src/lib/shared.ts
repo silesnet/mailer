@@ -1,5 +1,6 @@
 import fs from 'fs';
 import path from 'path';
+import 'core-js/features/array';
 
 export const errorExit = (msg: string, code: number = 1): never => {
   console.error('ERROR: ' + msg);
