@@ -5,7 +5,8 @@
   "main": "app.js",
   "scripts": {
     "clean": "rimraf build dist",
-    "build": "tsc",
+    "build": "npm run clean && tsc",
+    "dist": "npm run build && webpack",
     "dev": "tsc --watch",
     "pkg": "node script/pkg.js",
     "test-generate": "nodemon build/generate.js --template test/template.hbs --data test/data.csv --output build/test/generated-mail --clear-output",
