@@ -1,6 +1,6 @@
 # mailer
 
-Generate and send mass mail generated from CSV data file and Handlebars mail template.
+Send mass mail generated from CSV data file and Handlebars mail template.
 
 ## Build
 
@@ -20,7 +20,29 @@ $ ./node mail-gen.js
 $ ./node mail-send.js
 ```
 
-## Workflow
+Check test data file and template in the `test` folder.
+
+## Test
+
+```bash
+$ npm run test-gen
+```
+
+Check generate mail in `build/test/mail` folder.
+
+```bash
+$ npm run test-send
+```
+
+Check sent mail at https://ethereal.email.
+
+- login using user details found in `package.json`/`test-send` script
+- find delivered messages at https://ethereal.email/messages
+
+## Production workflow
+
+`nodejs` (version 8.17.0 or higher) has to be installed on target machine.
+You can download binary distribution for your platform from https://nodejs.org/dist/. Extract `node` executable from the package's `bin` folder.
 
 1. open named screen session
 
