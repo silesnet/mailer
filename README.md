@@ -2,9 +2,23 @@
 
 Generate and send mail generated from CSV data file and Handlebars mail template.
 
-## Usage
+## Build
 
-`mail-gen.js` and `mail-send.js` work with node version 8.17.0 and higher.
+```bash
+$ npm install
+$ npm run build
+$ npm run dist
+```
+
+`build/dist/mail-gen.js` and `build/dist/mail-send.js` scripts work with node version 8.17.0 and higher.
+See usage detail by running the scripts without any parameters.
+
+```bash
+$ ./node mail-gen.js
+$ ./node mail-send.js
+```
+
+## Workflow
 
 1. open named screen session
 
