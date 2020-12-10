@@ -1,6 +1,6 @@
 # mailer
 
-Generate and send mail generated from CSV data file and Handlebars mail template.
+Generate and send mass mail generated from CSV data file and Handlebars mail template.
 
 ## Build
 
@@ -9,6 +9,8 @@ $ npm install
 $ npm run build
 $ npm run dist
 ```
+
+## Usage
 
 `build/dist/mail-gen.js` and `build/dist/mail-send.js` scripts work with node version 8.17.0 and higher.
 See usage detail by running the scripts without any parameters.
