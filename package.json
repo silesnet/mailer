@@ -8,8 +8,8 @@
     "build": "tsc",
     "dist": "webpack",
     "dev": "tsc --watch",
-    "test-gen": "nodemon build/generate.js --template test/template.hbs.eml --data test/data.csv --output build/test/generated-mail --clear-output",
-    "test-send": "nodemon build/send.js --input build/test/generated-mail --host smtp.ethereal.email --port 587 --user cristopher.jacobson@ethereal.email --password kVcBf3kJv8TuU5aHC1 --pause 100"
+    "test-gen": "nodemon build/generate.js --template test/template.hbs.eml --data test/data.csv --output build/test/mail --clear-output",
+    "test-send": "nodemon build/send.js --input build/test/mail --host smtp.ethereal.email --port 587 --user cristopher.jacobson@ethereal.email --password kVcBf3kJv8TuU5aHC1 --pause 100"
   },
   "author": "silesnet",
   "license": "ISC",
