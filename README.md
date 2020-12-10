@@ -1,6 +1,6 @@
 # mailer
 
-Send mass mail of Handlebars template populated from CSV data.
+Send mass mail generated from CSV data and Handlebars template.
 
 ## Build
 
