@@ -3,6 +3,9 @@ Reply-To: return@no-mail.cz
 {{!-- mimeEncode helper would utf-8 encode value with international characters in email headers --}}
 To: "{{mimeEncode name}}" <{{email}}>
 From: "{{mimeEncode "Sender with utf-8 chars Ěš"}}" <sender@no-mail.cz>
+Cc: one@email,
+ next@mail
+Bcc: third@mail
 Subject: {{mimeEncode "Subject line with utf-8 chars ěščřČŇ"}}
 MIME-Version: 1.0
 Content-Type: text/html; charset=utf-8

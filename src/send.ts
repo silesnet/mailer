@@ -48,7 +48,7 @@ const send = async ({ input, host, port, user, password, pause, testRecipient }:
 
     // parse
     try {
-      mail = await parseMail(item.path);
+      mail = parseMail(item.path, testRecipient);
     } catch (error) {
       item.failed(() => console.log(`... failed parsing mail '${item.file}': '${error.message}'.`));
       continue;
@@ -56,7 +56,7 @@ const send = async ({ input, host, port, user, password, pause, testRecipient }:
 
     // send and pause
     try {
-      await mailer.send(testRecipient ? { ...mail, to: testRecipient } : mail);
+      await mailer.send(mail);
       item.succeded(() => console.log(`... mail '${item.file}' send.`));
     } catch (error) {
       item.failed(() => console.log(`... failed sending mail '${item.file}': '${error.message}'.`));

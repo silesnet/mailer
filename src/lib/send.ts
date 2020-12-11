@@ -1,5 +1,4 @@
 import parseArgs from 'minimist';
-import { simpleParser } from 'mailparser';
 import fs from 'fs';
 import nodemailer from 'nodemailer';
 import { errorExit } from './shared';
@@ -17,7 +16,7 @@ export interface Arguments {
 export interface RawMail {
   from: string;
   to: string;
-  raw: any;
+  raw: string;
 }
 
 export interface MailerConfig {
@@ -61,19 +60,75 @@ export const createMailer = async ({ host, port, user, password: pass }: MailerC
     errorExit(`failed creating mailer: '${error.message}`);
   }
   return {
-    send: (mail) => {
-      // TODO override raw mail to: with to in case those differ (--test-recipient)
-      // should perhaps also remove Cc and Bcc!
-      return transport.sendMail({
-        envelope: { from: mail.from, to: mail.to },
-        raw: mail.raw,
-      });
+    send: async (mail) => {
+      return transport.sendMail({ ...mail });
     },
   };
 };
 
-export const parseMail = async (path: string): Promise<RawMail> => {
-  const raw = fs.readFileSync(path, 'utf-8');
-  const mail = await simpleParser(raw);
-  return { from: mail.from!.text, to: mail.to!.text, raw: raw };
+const headerEntry = (line: string): { key: string; value: string } => {
+  const pair = line.split(':');
+  return { key: pair[0]?.toLowerCase(), value: pair[1]?.trim() };
+};
+
+export const parseMail = (path: string, onlyRecipient?: string): RawMail => {
+  let to = '';
+  let from = '';
+  let header = true;
+  let dropping = false;
+  const raw = fs
+    .readFileSync(path, 'utf-8')
+    .split(/\r?\n|\r/)
+    .map((line) => {
+      // end of header?
+      if (header && line === '') {
+        header = false;
+        return line;
+      }
+
+      // body line?
+      if (!header) {
+        // FIXME
+        return line;
+      }
+
+      // header line
+
+      // folded header value that should be dropped?
+      if (dropping && line.match(/^\s+/)) {
+        return undefined;
+      } else {
+        dropping = false;
+      }
+
+      const entry = headerEntry(line);
+
+      // override recipient if needed
+      if (entry.key === 'to') {
+        if (onlyRecipient) {
+          to = onlyRecipient;
+          dropping = true;
+          return 'To: ' + onlyRecipient;
+        }
+        to = entry.value;
+        return line;
+      }
+
+      // drop cc and bcc when overriding recipient
+      if (onlyRecipient && (entry.key === 'cc' || entry.key === 'bcc')) {
+        dropping = true;
+        return undefined;
+      }
+
+      // store from
+      if (entry.key === 'from') {
+        from = entry.value;
+      }
+
+      // unfiltered refular header line, no change
+      return line;
+    })
+    .filter((line) => line !== undefined)
+    .join('\n');
+  return { from, to, raw };
 };
