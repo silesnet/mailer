@@ -11,6 +11,7 @@ export interface Arguments {
   user: string;
   password: string;
   pause: number;
+  testRecipient: string;
 }
 
 export interface RawMail {
@@ -43,6 +44,7 @@ export const parseArguments = (argv: string[]): Arguments => {
     user: args.user,
     password: args.password,
     pause: args.pause,
+    testRecipient: args['test-recipient'],
   };
 };
 
@@ -59,11 +61,14 @@ export const createMailer = async ({ host, port, user, password: pass }: MailerC
     errorExit(`failed creating mailer: '${error.message}`);
   }
   return {
-    send: (mail) =>
-      transport.sendMail({
+    send: (mail) => {
+      // TODO override raw mail to: with to in case those differ (--test-recipient)
+      // should perhaps also remove Cc and Bcc!
+      return transport.sendMail({
         envelope: { from: mail.from, to: mail.to },
         raw: mail.raw,
-      }),
+      });
+    },
   };
 };
 

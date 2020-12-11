@@ -9,7 +9,7 @@ if (!args.input || !args.host || !Number.isFinite(args.pause)) {
     mail-send: send mails form raw mail files via SMTP
 
     Usage:
-      node mail-send.js --input|-i <FOLDER> --pause|-s <PAUSE-IN-MILLIS> [--host|-h <SMTP>] [--port|-t <PORT>] [--user|-u <USER>] [--password|-p <PASSWORD>]
+      node mail-send.js --input|-i <FOLDER> --pause|-s <PAUSE-IN-MILLIS> [--host|-h <SMTP>] [--port|-t <PORT>] [--user|-u <USER>] [--password|-p <PASSWORD>] [--test-recipient <EMAIL>]
   `);
   process.exit(1);
 }
@@ -21,14 +21,15 @@ Send mail
   port                   ${args.port}
   user                   ${args.user}
   password               ${args.password ? '***' : undefined}
-  pause                  ${args.pause} ms\n`);
+  pause                  ${args.pause} ms
+  test recipient         ${args.testRecipient}\n`);
 
 interface Counter {
   sent: number;
   failed: number;
 }
 
-const send = async ({ input, host, port, user, password, pause }: Arguments): Promise<Counter> => {
+const send = async ({ input, host, port, user, password, pause, testRecipient }: Arguments): Promise<Counter> => {
   console.log('configuring...');
 
   const queue = new Queue(input, { processed: 'sent', failed: 'failed' });
@@ -55,7 +56,7 @@ const send = async ({ input, host, port, user, password, pause }: Arguments): Pr
 
     // send and pause
     try {
-      await mailer.send(mail);
+      await mailer.send(testRecipient ? { ...mail, to: testRecipient } : mail);
       item.succeded(() => console.log(`... mail '${item.file}' send.`));
     } catch (error) {
       item.failed(() => console.log(`... failed sending mail '${item.file}': '${error.message}'.`));

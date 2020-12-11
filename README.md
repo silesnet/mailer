@@ -56,15 +56,23 @@ You can download binary distribution for your platform from https://nodejs.org/d
    $ ./node mail-gen.js -d customers.csv -t template.hbs > gen.log 2>&1
    ```
 
-3. send mass mail with pause (save result to log)
+3. send sample with overriden recipient address
+
+   ```bash
+   $ mkdir sample
+   $ ls mail | shuf -n 10 | xargs -i cp mail/{} sample/
+   $ ./node mail-send.js -i sample -s 0 --test-recipient me@no-company.com
+   ```
+
+4. send mass mail with pause (save result to log)
 
    ```bash
    $ ./node mail-send.js -i mail -s 5000 > send.log 2>&1
    ```
 
-4. detach from screen session (close putty) letting script running
+5. detach from screen session (close putty) letting script running
 
-5. ssh connect to the machine and check progress
+6. ssh connect to the machine and check progress
 
    ```bash
    $ ps ax | grep mail-send # process is running
@@ -73,7 +81,7 @@ You can download binary distribution for your platform from https://nodejs.org/d
    $ ls mail/failed | wc -l # nubmer of failed mails
    ```
 
-6. reattach to the screen session and exit after job finishes
+7. reattach to the screen session and exit after job finishes
 
    ```bash
    $ screen -r mail
