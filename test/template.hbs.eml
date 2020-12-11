@@ -1,5 +1,6 @@
 Return-Path: <return@no-mail.cz>
 Reply-To: return@no-mail.cz
+{{!-- mimeEncode helper would utf-8 encode value with international characters in email headers --}}
 To: "{{mimeEncode name}}" <{{email}}>
 From: "{{mimeEncode "Sender with utf-8 chars Ěš"}}" <sender@no-mail.cz>
 Subject: {{mimeEncode "Subject line with utf-8 chars ěščřČŇ"}}
@@ -25,7 +26,8 @@ Content-Transfer-Encoding: 8bit
 <body>
 <p>Hello {{name}},</p>
 <p>
-  plese send us money according to our agreemnt {{agreement}} number.
+  {{!-- ensure helper would fail on empty value --}}
+  plese send us money according to our agreemnt {{ensure agreement}} number.
 </p>
 <p>
   Thank you.
