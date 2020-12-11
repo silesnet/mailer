@@ -7,6 +7,7 @@ import {
   saveFile,
 } from './lib/generate';
 import { performance } from 'perf_hooks';
+import { errorExit } from './lib/shared';
 
 const args = parseArguments(process.argv.slice(2));
 
@@ -43,7 +44,13 @@ const start = performance.now();
 customers
   .on('data', (customer: { id: string; name: string; email: string; agreement: string }) => {
     const file = customer.id + '_' + normalizeText(customer.name) + '.eml';
-    const email = template(customer);
+    const email = (() => {
+      try {
+        return template(customer);
+      } catch (error) {
+        return errorExit(`failed generating mail for '${customer.name}' (id: ${customer.id}): '${error.message}'`);
+      }
+    })();
     saveFile(`${output}/${file}`, email);
     console.log(`... mail generated to '${file}'.`);
     emailsCount++;
