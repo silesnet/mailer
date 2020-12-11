@@ -57,9 +57,33 @@ export const createEmptyFolder = (folder: string, { clear = false } = {}): strin
 };
 
 export const createTemplate = (file: string): HandlebarsTemplateDelegate | never => {
+  let lines: string[];
+  const chunk = (start: { line: number; column: number }, end: { line: number; column: number }): string => {
+    let result: string;
+    if (start.line === end.line) {
+      result = lines[start.line - 1].substring(start.column, end.column);
+    } else {
+      result = lines[start.line - 1].substring(start.column) + '\n';
+      for (let i = start.line + 1; i < end.line; i++) {
+        result += lines[i - 1] + '\n';
+      }
+      result += lines[end.line - 1].substring(0, end.column);
+    }
+    return result;
+  };
   try {
+    Handlebars.registerHelper('ensure', (text, args) => {
+      if (!text || !text.trim()) {
+        throw new Error(
+          `required value for '${chunk(args.loc.start, args.loc.end)}' not present: ${JSON.stringify(args.data.root)}`
+        );
+      }
+      return new Handlebars.SafeString(text);
+    });
     Handlebars.registerHelper('mimeEncode', (text) => new Handlebars.SafeString('=?UTF-8?Q?' + encode(text) + '?='));
-    return Handlebars.compile(fs.readFileSync(file, 'utf8'), { strict: true });
+    const raw = fs.readFileSync(file, 'utf8');
+    lines = raw.split(/\n/);
+    return Handlebars.compile(raw, { strict: true });
   } catch (error: any) {
     return errorExit(`failed to create handlebars template of '${file}': '${error.message}'`);
   }
