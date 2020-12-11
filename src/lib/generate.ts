@@ -59,7 +59,7 @@ export const createEmptyFolder = (folder: string, { clear = false } = {}): strin
 export const createTemplate = (file: string): HandlebarsTemplateDelegate | never => {
   try {
     Handlebars.registerHelper('mimeEncode', (text) => new Handlebars.SafeString('=?UTF-8?Q?' + encode(text) + '?='));
-    return Handlebars.compile(fs.readFileSync(file, 'utf8'));
+    return Handlebars.compile(fs.readFileSync(file, 'utf8'), { strict: true });
   } catch (error: any) {
     return errorExit(`failed to create handlebars template of '${file}': '${error.message}'`);
   }
