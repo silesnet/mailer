@@ -120,3 +120,8 @@ export const saveFile = (file: string, content: string): void => {
     errorExit(`failed saving file '${file}'`);
   }
 };
+
+export const leftPad = (value: string, padding: string, length: number): string => {
+  const raw = padding.repeat(length) + value;
+  return raw.slice(raw.length - length);
+};

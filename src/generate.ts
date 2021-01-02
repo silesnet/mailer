@@ -3,8 +3,8 @@ import {
   createEmptyFolder,
   createTemplate,
   createCsvDataStream,
-  normalizeText,
   saveFile,
+  leftPad,
 } from './lib/generate';
 import { performance } from 'perf_hooks';
 import { errorExit } from './lib/shared';
@@ -42,13 +42,13 @@ console.log('generating...');
 let emailsCount = 0;
 const start = performance.now();
 customers
-  .on('data', (customer: { id: string; name: string; email: string; agreement: string }) => {
-    const file = customer.id + '_' + normalizeText(customer.name) + '.eml';
+  .on('data', (data: {}) => {
+    const file = leftPad(emailsCount.toString(), '0', 10) + '.eml';
     const email = (() => {
       try {
-        return template(customer);
+        return template(data);
       } catch (error) {
-        return errorExit(`failed generating mail for '${customer.name}' (id: ${customer.id}): '${error.message}'`);
+        return errorExit(`failed generating mail for ${JSON.stringify(data)}: '${error.message}'`);
       }
     })();
     saveFile(`${output}/${file}`, email);
